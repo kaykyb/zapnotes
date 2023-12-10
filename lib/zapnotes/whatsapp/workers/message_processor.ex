@@ -15,7 +15,14 @@ defmodule Zapnotes.Whatsapp.Worker.MessageProcessor do
     with {:ok, user} <- fetch_or_create_user(parsed_message.from),
          {:ok, chat_message} <- to_chat_messsage(parsed_message, user),
          {:ok, msg_id} <- Chats.push_message(chat_message) do
-      MessageIngestion.dispatch(msg_id)
+      msg_date = DateTime.from_unix!(parsed_message.timestamp)
+      now = DateTime.utc_now()
+
+      age = DateTime.diff(now, msg_date, :second)
+
+      if age < 300 do
+        MessageIngestion.dispatch(msg_id)
+      end
 
       :ok
     end

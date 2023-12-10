@@ -65,7 +65,7 @@ defmodule Zapnotes.Whatsapp.Webhook do
     @type t :: %__MODULE__{
             id: String.t(),
             from: String.t(),
-            timestamp: String.t(),
+            timestamp: integer(),
             type: String.t(),
             audio: Audio.t() | nil,
             text: Text.t() | nil
@@ -101,6 +101,14 @@ defmodule Zapnotes.Whatsapp.Webhook do
     end
 
     def from_map(%{"id" => id, "from" => from, "timestamp" => timestamp, "type" => type} = params) do
+      timestamp =
+        if is_integer(timestamp) do
+          timestamp
+        else
+          {timestamp, _} = Integer.parse(timestamp)
+          timestamp
+        end
+
       base = %__MODULE__{id: id, from: from, timestamp: timestamp, type: type}
 
       case type do

@@ -99,6 +99,9 @@ defmodule Zapnotes.Chats.ChatManager do
       {:ok, :idle} ->
         res = ChatHandler.start_idle(user.platform_uid, user.platform)
         {:noreply, %State{state | step: :idle}}
+
+      {:ok, :skip} ->
+        {:noreply, state}
     end
 
     new_state = %State{state | message_queue: []}
@@ -129,8 +132,11 @@ defmodule Zapnotes.Chats.ChatManager do
     {:ok, :processing_audio}
   end
 
-  defp process_message(%Message{}, :idle) do
-    IO.puts("HE")
+  defp process_message(%Message{text: text}, :idle) when not is_nil(text) do
     {:ok, :idle}
+  end
+
+  defp process_message(%Message{}, :idle) do
+    {:ok, :skip}
   end
 end
