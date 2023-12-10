@@ -1,6 +1,4 @@
 defmodule Zapnotes.Notion do
-  @database_id Application.compile_env(:zapnotes, [__MODULE__, :database_id])
-
   alias Zapnotes.Notion.Api
 
   def markdown_to_notion(markdown) do
@@ -10,7 +8,7 @@ defmodule Zapnotes.Notion do
   def save_to_notion_audio_database(page_title, date, phone, blocks) do
     parent = %{
       type: "database_id",
-      database_id: @database_id
+      database_id: database_id()
     }
 
     properties = %{
@@ -29,5 +27,11 @@ defmodule Zapnotes.Notion do
     }
 
     Api.create_page(parent, properties, blocks)
+  end
+
+  defp database_id() do
+    :zapnotes
+    |> Application.fetch_env!(__MODULE__)
+    |> Keyword.fetch!(:database_id)
   end
 end

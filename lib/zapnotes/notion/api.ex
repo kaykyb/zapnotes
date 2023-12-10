@@ -1,6 +1,4 @@
 defmodule Zapnotes.Notion.Api do
-  @token Application.compile_env(:zapnotes, [Zapnotes.Notion, :integration_secret])
-
   def create_page(parent, properties, children) do
     body = %{
       parent: parent,
@@ -31,7 +29,7 @@ defmodule Zapnotes.Notion.Api do
 
   defp default_headers() do
     %{
-      "Authorization" => "Bearer #{@token}",
+      "Authorization" => "Bearer #{integration_secret()}",
       "Accept" => "application/json",
       "Notion-Version" => "2022-06-28"
     }
@@ -43,5 +41,11 @@ defmodule Zapnotes.Notion.Api do
 
   defp ensure_status(res) do
     {:error, res}
+  end
+
+  defp integration_secret() do
+    :zapnotes
+    |> Application.fetch_env!(Zapnotes.Notion)
+    |> Keyword.fetch!(:integration_secret)
   end
 end

@@ -1,6 +1,4 @@
 defmodule Zapnotes.Openai.Api do
-  @token Application.compile_env(:zapnotes, [Zapnotes.Openai, :token])
-
   def transcribe_with_whisper(audio_buffer) do
     model = "whisper-1"
 
@@ -61,7 +59,7 @@ defmodule Zapnotes.Openai.Api do
 
   defp default_headers() do
     %{
-      "Authorization" => "Bearer #{@token}",
+      "Authorization" => "Bearer #{token()}",
       "Accept" => "application/json"
     }
   end
@@ -72,5 +70,11 @@ defmodule Zapnotes.Openai.Api do
 
   defp ensure_status(res) do
     {:error, res}
+  end
+
+  defp token() do
+    :zapnotes
+    |> Application.fetch_env!(Zapnotes.Openai)
+    |> Keyword.fetch!(:token)
   end
 end

@@ -1,7 +1,4 @@
 defmodule Zapnotes.Whatsapp.Api do
-  @access_token Application.compile_env(:zapnotes, [Zapnotes.Whatsapp, :access_token])
-  @phone_id Application.compile_env(:zapnotes, [Zapnotes.Whatsapp, :phone_id])
-
   def send_template_message(to_phone, template_name) do
     body = %{
       messaging_product: "whatsapp",
@@ -15,7 +12,7 @@ defmodule Zapnotes.Whatsapp.Api do
 
     with {:ok, res} <-
            Req.post(base_req(),
-             url: "/#{@phone_id}/messages",
+             url: "/#{config(:phone_id)}/messages",
              json: body,
              receive_timeout: 120_000,
              connect_options: [
@@ -39,7 +36,7 @@ defmodule Zapnotes.Whatsapp.Api do
       Req.get(
         media_url,
         headers: %{
-          "Authorization" => "Bearer #{@access_token}"
+          "Authorization" => "Bearer #{config(:access_token)}"
         }
       )
 
@@ -58,7 +55,7 @@ defmodule Zapnotes.Whatsapp.Api do
 
   defp default_headers() do
     %{
-      "Authorization" => "Bearer #{@access_token}",
+      "Authorization" => "Bearer #{config(:access_token)}",
       "Accept" => "application/json"
     }
   end
@@ -69,5 +66,11 @@ defmodule Zapnotes.Whatsapp.Api do
 
   defp ensure_status(res) do
     {:error, res}
+  end
+
+  defp config(key) do
+    :zapnotes
+    |> Application.fetch_env!(Zapnotes.Whatsapp)
+    |> Keyword.fetch!(key)
   end
 end
