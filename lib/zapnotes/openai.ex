@@ -13,7 +13,7 @@ defmodule Zapnotes.Openai do
                content: transcription
              }
            ]) do
-      response = res["choices"]
+      res["choices"]
       |> Enum.at(0)
       |> get_in(["message", "content"])
       |> Jason.decode()
