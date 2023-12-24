@@ -14,7 +14,7 @@ defmodule Zapnotes.Chats.Workers.AudioProcessor do
     with {:ok, audio_buffer} <- ChatHandler.fetch_audio(message.audio_url, message.platform),
          {:ok, transcription} <- Openai.Api.transcribe_with_whisper(audio_buffer),
          {:ok, summary} <- Openai.summarize_transcription(transcription),
-         {:ok, blocks} <- structure_markdown(summary),
+         {:ok, blocks} <- structure_markdown(summary, transcription),
          {:ok, page_url} <-
            Notion.save_to_notion_audio_database(
              summary["title"],
@@ -34,7 +34,7 @@ defmodule Zapnotes.Chats.Workers.AudioProcessor do
     Oban.resume_queue(queue: :audio_processing)
   end
 
-  defp structure_markdown(%{"summary" => summary, "content" => content, "corrected_transcript" => corrected_transcript}) do
+  defp structure_markdown(%{"summary" => summary, "content" => content}, transcript) do
     md = """
     # Summary
 
@@ -42,7 +42,9 @@ defmodule Zapnotes.Chats.Workers.AudioProcessor do
 
     #{content}
 
-    #{corrected_transcript}
+    # Transcript
+
+    #{transcript}
     """
 
     Notion.markdown_to_notion(md)
