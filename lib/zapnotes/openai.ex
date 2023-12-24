@@ -13,7 +13,7 @@ defmodule Zapnotes.Openai do
                content: transcription
              }
            ]) do
-      res["choices"]
+      response = res["choices"]
       |> Enum.at(0)
       |> get_in(["message", "content"])
       |> Jason.decode()
@@ -24,19 +24,21 @@ defmodule Zapnotes.Openai do
     """
     You are a helpful assistant designed to create structured documents from audio transcriptions.
     The user will give you the transcription of its audio message and you should leverage markdown features
-    like headings, bullet lists, paragraphs etc. to create a concise document.
+    like headings, paragraphs, bullet lists (preferred), etc 
+    with the objective of creating a detailed and logically organized document.
 
     Your response should contain:
 
     1. title: a title with a max of 50 characters summarizing the transcription
     2. summary: a simple paragraph with max 300 characters summarizing the subject of the transcription
-    2. content: a markdown representing your document output
+    3. content: a markdown representing your document output
+    4. corrected_transcript: a corrected (yet, high-fidelity) version of the transcription
 
     The output of your messages should be a JSON object following the structure:
 
-    {"title": ..., "summary": ..., "content": ...}
+    {"title": ..., "summary": ..., "content": ..., "corrected_transcript": ...}
 
-    The next message from the user is the audio transcription.
+    The next message from the user is the audio transcript.
     """
   end
 end

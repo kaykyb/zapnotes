@@ -34,13 +34,15 @@ defmodule Zapnotes.Chats.Workers.AudioProcessor do
     Oban.resume_queue(queue: :audio_processing)
   end
 
-  defp structure_markdown(%{"summary" => summary, "content" => content}) do
+  defp structure_markdown(%{"summary" => summary, "content" => content, "corrected_transcript" => corrected_transcript}) do
     md = """
     # Summary
 
     #{summary}
 
     #{content}
+
+    #{corrected_transcript}
     """
 
     Notion.markdown_to_notion(md)
