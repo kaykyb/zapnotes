@@ -49,7 +49,7 @@ defmodule Zapnotes.MixProject do
       {:oban, "~> 2.16"},
       {:req, "~> 0.4.0"},
       {:multipart, "~> 0.4.0"},
-      {:martian_ex, "~> 0.1.0"}
+      {:martian_ex, "~> 0.2.0"}
     ]
   end
 
